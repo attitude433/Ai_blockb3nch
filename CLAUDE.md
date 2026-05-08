@@ -385,6 +385,11 @@ animations/{모델명}_{동작}.animation.json
 | 모든 큐브를 `uvOffset=(0,0)`으로 생성 | UV 공간이 겹쳐 Z-파이팅과 동일한 투명 현상 발생. 큐브마다 `uvOffset`을 다르게 지정해 UV 영역이 겹치지 않게 할 것 |
 | `paint_faces` 루프에서 revision 갱신 확인 안 함 | 호출마다 revision이 달라져야 정상. 연속 호출에서 같은 revision이 반복되면 이전 호출이 실패한 것 — SyncRev 후 재시도 |
 | `update_cube` 후 재페인팅 누락 | update_cube는 내부 UV 아틀라스를 재배치하므로 새 UV 영역이 빈 상태로 생성됨. 수정 직후 해당 큐브 6면 재페인팅 필수 |
+| `paint_faces`에서 `target.cube` 사용 | 올바른 필드명은 `target.cubeName` (문자열). `target.cube`는 스키마 오류 발생 |
+| `paint_faces`에서 `op.type` 사용 | 올바른 필드명은 `op.op` (예: `op='fill_rect'`). `type`은 존재하지 않음 |
+| 큐브 추가 후 일괄 페인팅 시 UV 투명 발생 | AJ 포맷에서 boxUv=false 큐브는 UV가 자동 배치됨. **모든 큐브 추가 완료 후** 각 큐브의 6면(north/south/east/west/up/down)을 명시적으로 개별 호출해 페인팅해야 투명 없음. face 생략으로 한 번에 6면 페인팅해도 되지만 불안정할 경우 face별 명시 호출 권장 |
+| `coordSpace="texture"`로 전체 텍스처 배경 채우기 시도 | `target` 필드가 필수라 특정 큐브 없이 전체 텍스처 fill 불가. 투명 영역 제거는 각 큐브 face별 개별 페인팅으로만 해결 가능 |
+| `render_preview`에 `output='image/png'` 전달 | `output`은 `'single'` 또는 `'sequence'`만 허용. 이미지 데이터는 응답 content[0].data에서 base64로 추출 |
 | `set_frame_pose` 사용 | ashfox 0.0.4 버그 — API는 성공 반환하지만 일부 본만 Blockbench에 반영됨. JSON 직접 작성 방식 사용 |
 | `frame=0.25` 등 소수 사용 | frame은 초가 아닌 프레임 번호. fps=20이면 0.25s = frame 5 |
 | 루프 애니메이션에 t=1.0 누락 | t=1.0 키프레임을 t=0과 동일하게 추가해야 루프 경계 매끄럽게 연결 |
